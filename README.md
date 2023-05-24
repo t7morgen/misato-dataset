@@ -37,7 +37,7 @@ Want to get hands-on for drug discovery using AI?
  
 In this repository, we show how to download and apply the Misato database for AI models. You can access the calculated properties of different protein-ligand structures and use them for training in Pytorch based dataloaders. We provide a small sample of the dataset along with the repo.
 
-You can freely download the **FULL MISATO dataset** from Zenodo using the links below:
+You can freely download the **FULL MISATO dataset** from [Zenodo](https://zenodo.org/record/7711953) using the links below:
 
 - MD (133 GiB)
 - QM (0.3 GiB)
