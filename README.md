@@ -1,6 +1,6 @@
 <div align="center">
 
-# MISATO - Machine learning dataset for structure-based drug discovery (Official repo)
+# MISATO - Machine learning dataset of protein-ligand complexes for structure-based drug discovery 
 
 [![python](https://img.shields.io/badge/-Python_3.7_%7C_3.8_%7C_3.9_%7C_3.10-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![pytorch](https://img.shields.io/badge/PyTorch_1.10+-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/get-started/locally/)
@@ -21,7 +21,7 @@ We are a drug discovery community project :hugs:
 
 Lets crack the **100+ ns** MD, **30000+ protein-ligand structures** and a whole new world of **AI models for drug discovery** together.
 
-[Check out the paper!](MISATO.pdf)
+[Check out the paper!](https://www.biorxiv.org/content/10.1101/2023.05.24.542082v2)
 
 ![Alt text](logo.jpg?raw=true "MISATO")
 
@@ -148,5 +148,5 @@ conda install -c conda-forge ambertools nb_conda_kernels
 pip install h5py jupyter ipykernel==5.5.5 ipywidgets==7.6.3 nglview==2.7.7
 ```
 
-
-
+## Citation
+If you found this work useful please consider citing the article.
