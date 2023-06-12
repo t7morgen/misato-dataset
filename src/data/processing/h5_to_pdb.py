@@ -3,7 +3,7 @@ import h5py
 import argparse
 import numpy as np
 
-atomic_numbers_Map = {1:'H', 5:'B', 6:'C', 7:'N', 8:'O',11:'Na',12:'Mg',14:'Si',15:'P',16:'S',17:'Cl',19:'K',20:'Ca',35:'Br',53:'I'}
+atomic_numbers_Map = {1:'H', 5:'B', 6:'C', 7:'N', 8:'O', 9:'F',11:'Na',12:'Mg',13:'Al',14:'Si',15:'P',16:'S',17:'Cl',19:'K',20:'Ca',34:'Se',35:'Br',53:'I'}
 
 def get_maps(mapdir):
     residueMap = pickle.load(open(mapdir+'atoms_residue_map.pickle','rb'))
@@ -30,12 +30,16 @@ def get_entries_QM(struct, f):
 
 def get_atom_name(i, atoms_number, residue_atom_index, residue_name, type_string, nameMap):
     if residue_name == 'MOL':
-        atom_name = atomic_numbers_Map[atoms_number[i]]+str(residue_atom_index)
+        try:
+            atom_name = atomic_numbers_Map[atoms_number[i]]+str(residue_atom_index)
+        except KeyError:
+            #print('KeyError', (residue_name, residue_atom_index-1, type_string))
+            atom_name = atomic_numbers_Map[atoms_number[i]]+str(residue_atom_index)
     else:
         try:
             atom_name = nameMap[(residue_name, residue_atom_index-1, type_string)]
         except KeyError:
-            print('KeyError', (residue_name, residue_atom_index-1, type_string))
+            #print('KeyError', (residue_name, residue_atom_index-1, type_string))
             atom_name = atomic_numbers_Map[atoms_number[i]]+str(residue_atom_index)
     return atom_name
 
