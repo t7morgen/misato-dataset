@@ -15,7 +15,7 @@ from scipy.stats import spearmanr
 
 from MDmodel import GNN_MD
 import utils
-sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)).split('MiSaTo-dataset')[0],'MiSaTo-dataset/src/data/components/'))
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)).split('misato-dataset')[0],'misato-dataset/src/data/components/'))
 
 from datasets import ProtDataset
 from transformMD import GNNTransformMD
