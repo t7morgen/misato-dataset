@@ -16,7 +16,7 @@ import torch_geometric.transforms as T
 
 from QMmodel import GNN_QM
 import utils
-sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)).split('MiSaTo-dataset')[0],'MiSaTo-dataset/src/data/components/'))
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.realpath(__file__)).split('misato-dataset')[0],'misato-dataset/src/data/components/'))
 
 from datasets import MolDataset
 from transformQM import GNNTransformQM
