@@ -135,7 +135,7 @@ def strip_feature(args, strip_properties, h5_entries, strip_value, strip_feature
     return stripped_entries
 
 
-def write_h5_info(outName, struct, preprocessing_entries, h5_entries):
+def write_h5_info(outName, struct, preprocessing_entries, h5_entries, storeTraj = True):
     """
     Writing features to h5 file. Please beware that the feature name is relevant for correct dtype definiton.
     atoms_ and molecules_ are always i8, frames_, feature_ and trajectory_ f8.
@@ -145,9 +145,15 @@ def write_h5_info(outName, struct, preprocessing_entries, h5_entries):
         subgroup = oF.create_group(struct)
         for preprocessing_property in  preprocessing_entries.keys():
             if preprocessing_property.startswith('atoms_') or preprocessing_property.startswith('molecules_'):
-                subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='i8')
-            if preprocessing_property.startswith('trajectory_') or preprocessing_property.startswith('feature_'):
-                subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='f8')   
+                if not 'coordinates_ref' in preprocessing_property:
+                    subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='i8')
+            if preprocessing_property.startswith('atoms_coordinates_ref'):
+                    subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='f8')                
+            if preprocessing_property.startswith('trajectory_'):
+                if storeTraj:
+                    subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='f8')  
+            if preprocessing_property.startswith('feature_'):
+                subgroup.create_dataset(preprocessing_property, data= preprocessing_entries[preprocessing_property], compression = "gzip", dtype='f8') 
         for h5_property in  h5_entries.keys():
             if h5_property.startswith('frames_'):
                 subgroup.create_dataset(h5_property, data= h5_entries[h5_property], compression = "gzip", dtype='f8')
