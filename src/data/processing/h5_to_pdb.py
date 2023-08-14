@@ -69,7 +69,7 @@ def update_residue_indices(residue_number, i, type_string, atoms_type, atoms_res
     If the atom sequence has O-N icnrease the residueNumber
     """
     if i < len(atoms_type)-1:
-        if type_string == 'O' and typeMap[atoms_type[i+1]] == 'N' or residue_Map[atoms_residue[i+1]]=='MOL':
+        if type_string[0] == 'O' and typeMap[atoms_type[i+1]][0] == 'N' or residue_Map[atoms_residue[i+1]]=='MOL':
             # GLN has a O N sequence within the AA
             if not ((residue_name == 'GLN' and residue_atom_index==12) or (residue_name == 'ASN' and residue_atom_index==9)):
                 residue_number +=1
