@@ -32,6 +32,7 @@ Want to get hands-on for drug discovery using AI?
 
 [Join our discord server!](https://discord.gg/tGaut92VYB)
 
+Check out our Hugging Face spaces to run and visualize the [adaptability model](https://huggingface.co/spaces/MISATO-dataset/Adaptability_protein_dynamics) and to perform [QM property predictions](https://huggingface.co/spaces/MISATO-dataset/qm_property_calculation).
 
 ## 📌  Introduction 
  
