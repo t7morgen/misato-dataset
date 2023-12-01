@@ -65,8 +65,8 @@ We recommend to pull our MISATO image from DockerHub or to create your own image
 
 ```bash
 # clone project
-git clone https://github.com/sab148/MiSaTo-dataset.git
-cd MiSaTo-dataset
+git clone https://github.com/t7morgen/misato-dataset.git
+cd misato-dataset
 ```
 For singularity use:
 ```bash
