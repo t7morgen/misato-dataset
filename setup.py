@@ -5,14 +5,15 @@ with open('README.md', 'r') as f:
   
   
 setup(
-  name = "MISATO_JCY",
-  version = "0.0.3",
+  name = "misato-dataset",
+  version = "0.0.4",
   description="Unofficial MISATO dataset pypi package. For instructions on dataset download see official GitHub page (https://github.com/t7morgen/misato-dataset).",
   package_dir={"": "src"},
   packages=find_packages(where="src"),
   long_description=readme_content,
   long_description_content_type="text/markdown",
   url="https://github.com/t7morgen/misato-dataset",
+  
   author="Jean Charle Yaacoub", 
   author_email="jyaacoub21@gmail.com",
 
