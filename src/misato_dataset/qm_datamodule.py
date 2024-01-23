@@ -19,16 +19,16 @@
     License along with this library; if not, write to the Free Software 
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA'''
 
-import os
+import os 
 
 from pytorch_lightning import LightningDataModule
 from torch_geometric.loader import DataLoader
 import torch_geometric.transforms as T
 
-from .components.datasets import ProtDataset
-from .components.transformMD import GNNTransformMD
+from .components.datasets import MolDataset
+from .components.transformQM import GNNTransformQM
 
-class MDDataModule(LightningDataModule):
+class QMDataModule(LightningDataModule):
     """A DataModule implements 4 key methods:
 
         def setup(self, stage):
@@ -45,13 +45,14 @@ class MDDataModule(LightningDataModule):
     def __init__(
         self,
         files_root: str,
-        h5file = "h5_files/MD_dataset_soft_hard_noH.hdf5",
-        train = "splits/train_soft_hard.txt",
-        val = "splits/val_soft_hard.txt",
-        test = "splits/test_soft_hard.txt",
-        batch_size = 16,
+        h5file = "h5_files/qm.hdf5",
+        train = "splits/train_norm.txt",
+        val = "splits/val_norm.txt",
+        test = "splits/test_norm.txt",
+        normfile = "h5_files/qm_norm.hdf5",
+        batch_size = 128,
         num_workers = 48,
-        transform = T.RandomTranslate(0.05)
+        transform = T.RandomJitter(0.05)
     ):
         super().__init__()
 
@@ -59,31 +60,32 @@ class MDDataModule(LightningDataModule):
         # also ensures init params will be stored in ckpt
         self.save_hyperparameters(logger=False)
 
-
         self.files_root = files_root
         self.h5file = h5file
 
         self.train = train
         self.val = val
         self.test = test
+        self.normfile = normfile
 
         self.batch_size = batch_size
         self.num_workers = num_workers
-        self.transform = transform
-        
+
+        self.transform = transform 
 
     def setup(self, stage=None):
         """Load data. Set variables: `self.data_train`, `self.data_val`, `self.data_test`.
+
         """
 
-        self.data_train = ProtDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.train), transform=GNNTransformMD(), post_transform=self.transform)
-        self.data_val = ProtDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.val), transform=GNNTransformMD())
-        self.data_test = ProtDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.test), transform=GNNTransformMD())
+        self.data_train = MolDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.train), target_norm_file=os.path.join(self.files_root, self.normfile), transform=GNNTransformQM(), post_transform=self.transform)
+        self.data_val = MolDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.val), target_norm_file=os.path.join(self.files_root, self.normfile), transform=GNNTransformQM())
+        self.data_test = MolDataset(os.path.join(self.files_root, self.h5file), os.path.join(self.files_root, self.test), target_norm_file=os.path.join(self.files_root, self.normfile), transform=GNNTransformQM())
 
     def train_dataloader(self):
         return DataLoader(
             dataset=self.data_train, 
-            batch_size=self.batch_size,
+            batch_size=self.batch_size, 
             shuffle=True, 
             num_workers=self.num_workers
         )
@@ -98,12 +100,11 @@ class MDDataModule(LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(
-            dataset=self.data_test,
-            batch_size=self.batch_size,
+            dataset=self.data_test, 
+            batch_size=self.batch_size, 
             shuffle=False, 
             num_workers=self.num_workers
         )
 
-
 if __name__ == "__main__":
-    _ = MDDataModule()
+    _ = QMDataModule()

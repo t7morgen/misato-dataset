@@ -21,7 +21,7 @@
 
 import torch
 from torch_geometric.data import Data
-from graph import prot_df_to_graph, mol_df_to_graph_for_qm
+from .graph import prot_df_to_graph, mol_df_to_graph_for_qm
 
 def prot_graph_transform(item, atom_keys, label_key, edge_dist_cutoff):
     """Transform for converting dataframes to Pytorch Geometric graphs, to be applied when defining a :mod:`Dataset <atom3d.datasets.datasets>`.
