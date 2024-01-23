@@ -6,7 +6,7 @@ with open('README.md', 'r') as f:
   
 setup(
   name = "misato-dataset",
-  version = "0.0.6",
+  version = "0.0.7",
   description="UNOFFICIAL Misato dataset pypi package. For instructions on dataset download see official GitHub page (https://github.com/t7morgen/misato-dataset).",
   package_dir={"": "src"},
   packages=find_packages(where="src"),
