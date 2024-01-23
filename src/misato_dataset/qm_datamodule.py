@@ -52,7 +52,7 @@ class QMDataModule(LightningDataModule):
         normfile = "h5_files/qm_norm.hdf5",
         batch_size = 128,
         num_workers = 48,
-        transform = T.RandomTranslate(0.05)
+        transform = T.RandomJitter(0.05)
     ):
         super().__init__()
 

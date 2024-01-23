@@ -51,7 +51,7 @@ class MDDataModule(LightningDataModule):
         test = "splits/test_soft_hard.txt",
         batch_size = 16,
         num_workers = 48,
-        transform = T.RandomTranslate(0.05)
+        transform = T.RandomJitter(0.05)
     ):
         super().__init__()
 
