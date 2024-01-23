@@ -6,8 +6,8 @@ with open('README.md', 'r') as f:
   
 setup(
   name = "misato-dataset",
-  version = "0.0.4",
-  description="Unofficial MISATO dataset pypi package. For instructions on dataset download see official GitHub page (https://github.com/t7morgen/misato-dataset).",
+  version = "0.0.5",
+  description="UNOFFICIAL Misato dataset pypi package. For instructions on dataset download see official GitHub page (https://github.com/t7morgen/misato-dataset).",
   package_dir={"": "src"},
   packages=find_packages(where="src"),
   long_description=readme_content,
@@ -17,10 +17,10 @@ setup(
   author="Jean Charle Yaacoub", 
   author_email="jyaacoub21@gmail.com",
 
-  license="MIT",
+  license="GPL-3",
   classifiers=[
       "Programming Language :: Python :: 3",
-      "License :: OSI Approved :: MIT License",
+      "License :: GPL-3 License",
       "Operating System :: OS Independent",
       ],
   install_requires=[
