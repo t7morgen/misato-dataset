@@ -70,8 +70,8 @@ def update_residue_indices(residue_number, i, type_string, atoms_type, atoms_res
     """
     if i < len(atoms_type)-1:
         if type_string[0] == 'O' and typeMap[atoms_type[i+1]][0] == 'N' or residue_Map[atoms_residue[i+1]]=='MOL':
-            # GLN has a O N sequence within the AA
-            if not ((residue_name == 'GLN' and residue_atom_index==12) or (residue_name == 'ASN' and residue_atom_index==9)):
+            # GLN and ASN have a O-N sequence within the AA. See nameMap (atoms_name_map_for_pdb.pickle)
+            if not ((residue_name == 'GLN' and residue_atom_index in [12, 14]) or (residue_name == 'ASN' and residue_atom_index in [9, 11])):
                 residue_number +=1
                 residue_atom_index = 0
     return residue_number, residue_atom_index
