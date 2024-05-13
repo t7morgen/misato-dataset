@@ -21,7 +21,7 @@ We are a drug discovery community project :hugs:
 
 Lets crack the **100+ ns** MD, **30000+ protein-ligand structures** and a whole new world of **AI models for drug discovery** together.
 
-[Check out the paper!](https://www.biorxiv.org/content/10.1101/2023.05.24.542082v2)
+[Check out the paper!](https://www.nature.com/articles/s43588-024-00627-2)
 
 ![Alt text](logo.jpg?raw=true "MISATO")
 
