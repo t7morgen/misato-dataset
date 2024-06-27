@@ -20,7 +20,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA'''
 
 
-# usage: python src/data/processing/h5_to_traj.py -s 11GS --frame 0 -dMD data/MD/h5_files/tiny_md.hdf5 -oF test_traj.nc
+# usage: python src/data/processing/h5_to_traj.py -s 11GS -dMD data/MD/h5_files/tiny_md.hdf5 -oF test_traj.nc
 
 
 
@@ -34,20 +34,20 @@ import sys
 
 
 
-def get_entries(struct, f, frame):
-    trajectory_coordinates = f.get(struct+'/'+'trajectory_coordinates')
-    atoms_type = f.get(struct+'/'+'atoms_type')    
-    atoms_number = f.get(struct+'/'+'atoms_number') 
-    atoms_residue = f.get(struct+'/'+'atoms_residue') 
-    molecules_begin_atom_index = f.get(struct+'/'+'molecules_begin_atom_index') 
+def get_entries(struct, f):
+    trajectory_coordinates = f.get(os.path.join(struct,'trajectory_coordinates'))
     return trajectory_coordinates
 
-def open_restart_file(struct):
-    print(os.path.join("data/restart",struct,"production.rst"))
-    traj = pt.iterload(os.path.join("data","MD","restart",struct,"production.rst"), os.path.join("data","MD","restart",struct,"production.top"))
+def open_restart_file(struct, rstPath):
+    traj = pt.iterload(os.path.join(rstPath,struct,"production.rst"), os.path.join(rstPath,struct,"production.top"))
     return traj
 
 def create_new_traj(traj, h5_coordinates):
+    """
+    Coordinates are from h5 file are appended as frames to stripped traj.  
+    
+    """
+    h5_coordinates = np.expand_dims(h5_coordinates, axis=2)
     for frameNum in range(np.shape(h5_coordinates)[0]):
         frame = pt.Frame()
         for i in range(traj.n_atoms):
@@ -56,7 +56,9 @@ def create_new_traj(traj, h5_coordinates):
     return traj[1:]
 
 def create_topology(topNameNew, file_top, mask):
-    print(file_top)
+    """
+    A stripped toplogy is written to file. 
+    """
     top = pt.load_topology(file_top)
     top = pt.strip(top, "!({})".format(mask))
     top.save(topNameNew)
@@ -64,19 +66,19 @@ def create_topology(topNameNew, file_top, mask):
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--struct", required=True, help="pdb code of struct to convert e.g. 11gs")
-    parser.add_argument("-f", "--frame", required=False, help="Frame of trajectory to convert", default=0, type=int)
+    parser.add_argument("-s", "--struct", required=True, help="pdb code of struct to convert e.g. 11GS, use capital letters")
     parser.add_argument("-dMD", "--datasetMD", required=False, help="MD dataset in hdf5 format, e.g. MD_dataset_mapped.hdf5", type=str)
     parser.add_argument("-oF", "--outFilename", required=False, help="Name of the outfile. The name specifies the format. Use XXX.nc for netcdf, (XXX.pdb for PDB not recommended because pytraj messes up here). ", type=str)
+    parser.add_argument("-r", "--rstPath", required=False, help="Path to the directory of the structures (containing a separate structure folder containing production.rst,production.top files), see data/MD/restart/", default = "data/MD/restart/", type=str)
 
     args = parser.parse_args()
     struct = args.struct
-    traj = open_restart_file(struct.lower())
+    traj = open_restart_file(struct.lower(), args.rstPath)
     f = h5py.File(args.datasetMD, 'r')
-    frame = args.frame
-    trajectory_coordinates = get_entries(struct, f, frame)
-    h5_coordinates = np.expand_dims(trajectory_coordinates, axis=2)
-    new_traj = create_new_traj(traj["!:WAT,Na+,Cl-"], h5_coordinates)
+    h5_coordinates = get_entries(struct, f)
+    # This mask strippes all Waters and Ions. 
+    mask = "!:WAT,Na+,Cl-"
+    new_traj = create_new_traj(traj[mask], h5_coordinates)
     pt.write_traj(args.outFilename, new_traj, overwrite=True)
-    create_topology(args.outFilename.split(".")[0]+".top",  os.path.join("data","MD","restart",struct.lower(),"production.top"), "!:WAT,Na+,Cl-")
+    create_topology(args.outFilename.split(".")[0]+".top",  os.path.join(args.rstPath,struct.lower(),"production.top"), mask)
 
