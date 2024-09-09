@@ -35,16 +35,33 @@ import sys
 
 
 def get_entries(struct, f):
+    """
+    Get the trajectory coordinates from the h5 file.
+    Args:
+    struct (str): PDB code of the structure
+    f (h5py file): h5py file containing the dataset
+    
+    """
     trajectory_coordinates = f.get(os.path.join(struct,'trajectory_coordinates'))
     return trajectory_coordinates
 
 def open_restart_file(struct, rstPath):
+    """
+    Open the restart file of the structure.
+    Args:
+    struct (str): PDB code of the structure
+    rstPath (str): Path to the directory of the structures (containing a separate structure folder containing production.rst,production.top files)
+    """
     traj = pt.iterload(os.path.join(rstPath,struct,"production.rst"), os.path.join(rstPath,struct,"production.top"))
     return traj
 
 def create_new_traj(traj, h5_coordinates):
     """
-    Coordinates are from h5 file are appended as frames to stripped traj.  
+    Coordinates from h5 file are appended as frames to stripped traj.  
+
+    Args:
+    traj (pytraj trajectory): Trajectory from the restart file
+    h5_coordinates (np.array): Coordinates
     
     """
     h5_coordinates = np.expand_dims(h5_coordinates, axis=2)
@@ -57,7 +74,12 @@ def create_new_traj(traj, h5_coordinates):
 
 def create_topology(topNameNew, file_top, mask):
     """
-    A stripped toplogy is written to file. 
+    A stripped toplogy is written to file.
+    Args:
+    topNameNew (str): Name of the new topology file
+    file_top (str): Original topology file
+    mask (str): Mask to strip the topology
+
     """
     top = pt.load_topology(file_top)
     top = pt.strip(top, "!({})".format(mask))
@@ -76,7 +98,7 @@ if __name__=="__main__":
     traj = open_restart_file(struct.lower(), args.rstPath)
     f = h5py.File(args.datasetMD, 'r')
     h5_coordinates = get_entries(struct, f)
-    # This mask strippes all Waters and Ions. 
+    # This mask strips all waters and ions. 
     mask = "!:WAT,Na+,Cl-"
     new_traj = create_new_traj(traj[mask], h5_coordinates)
     pt.write_traj(args.outFilename, new_traj, overwrite=True)

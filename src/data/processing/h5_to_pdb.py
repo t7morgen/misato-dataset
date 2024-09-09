@@ -27,12 +27,24 @@ import numpy as np
 atomic_numbers_Map = {1:'H', 5:'B', 6:'C', 7:'N', 8:'O', 9:'F',11:'Na',12:'Mg',13:'Al',14:'Si',15:'P',16:'S',17:'Cl',19:'K',20:'Ca',34:'Se',35:'Br',53:'I'}
 
 def get_maps(mapdir):
+    """
+    Load the maps
+    Args:
+        mapdir: path to the maps
+    """
     residueMap = pickle.load(open(mapdir+'atoms_residue_map.pickle','rb'))
     typeMap = pickle.load(open(mapdir+'atoms_type_map.pickle','rb'))
     nameMap = pickle.load(open(mapdir+'atoms_name_map_for_pdb.pickle','rb'))
     return residueMap, typeMap, nameMap
 
 def get_entries(struct, f, frame):
+    """
+    Get the entries of the hdf5 file
+    Args:
+        struct: pdb code
+        f: hdf5 file
+        frame: frame of the trajectory
+    """
     trajectory_coordinates = f.get(struct+'/'+'trajectory_coordinates')[frame]
     atoms_type = f.get(struct+'/'+'atoms_type')    
     atoms_number = f.get(struct+'/'+'atoms_number') 
@@ -41,6 +53,12 @@ def get_entries(struct, f, frame):
     return trajectory_coordinates,atoms_type,atoms_number,atoms_residue,molecules_begin_atom_index
 
 def get_entries_QM(struct, f):
+    """
+    Get the entries of the hdf5 file
+    Args:
+        struct: pdb code
+        f: hdf5 file
+    """
     x = f.get(struct+'/atom_properties/atom_properties_values/')[:,0]
     y = f.get(struct+'/atom_properties/atom_properties_values/')[:,1]
     z = f.get(struct+'/atom_properties/atom_properties_values/')[:,2]
@@ -50,6 +68,16 @@ def get_entries_QM(struct, f):
 
 
 def get_atom_name(i, atoms_number, residue_atom_index, residue_name, type_string, nameMap):
+    """
+    Get the atom name
+    Args:
+        i: atom index
+        atoms_number: number of the atoms
+        residue_atom_index: atom index within the residue
+        residue_name: residue name
+        type_string: type of the atom
+        nameMap: dictionary
+    """
     if residue_name == 'MOL':
         try:
             atom_name = atomic_numbers_Map[atoms_number[i]]+str(residue_atom_index)
@@ -67,6 +95,16 @@ def get_atom_name(i, atoms_number, residue_atom_index, residue_name, type_string
 def update_residue_indices(residue_number, i, type_string, atoms_type, atoms_residue, residue_name, residue_atom_index,residue_Map, typeMap):
     """
     If the atom sequence has O-N icnrease the residueNumber
+    Args:
+        residue_number: residue number
+        i: atom index
+        type_string: type of the atom
+        atoms_type: type of the atoms
+        atoms_residue: residue of the atoms
+        residue_name: residue name
+        residue_atom_index: atom index within the residue
+        residue_Map: dictionary
+        typeMap: dictionary
     """
     if i < len(atoms_type)-1:
         if type_string[0] == 'O' and typeMap[atoms_type[i+1]][0] == 'N' or residue_Map[atoms_residue[i+1]]=='MOL':
@@ -78,7 +116,13 @@ def update_residue_indices(residue_number, i, type_string, atoms_type, atoms_res
 
 def insert_TERS(i, molecules_begin_atom_index, residue_number, residue_atom_index, lines):
     """
-    We have to insert TERs for the endings of the molecule
+    Add TER line if the next atom is the first atom of a new molecule
+    Args:   
+        i: atom index
+        molecules_begin_atom_index: list of atom indices where a new molecule starts
+        residue_number: residue number
+        residue_atom_index: atom index within the residue
+        lines: list of pdb lines
     """
     if i+1 in molecules_begin_atom_index:
         lines.append('TER')
@@ -88,7 +132,17 @@ def insert_TERS(i, molecules_begin_atom_index, residue_number, residue_atom_inde
 
 def create_pdb_lines_MD(trajectory_coordinates, atoms_type, atoms_number, atoms_residue, molecules_begin_atom_index, typeMap,residue_Map, nameMap):
     """
-    We go through each atom line and bring the inputs in the pdb format
+
+    Go through each atom line and bring the inputs in the pdb format
+    Args:
+        trajectory_coordinates: coordinates of the atoms
+        atoms_type: type of the atoms
+        atoms_number: number of the atoms
+        atoms_residue: residue of the atoms
+        molecules_begin_atom_index: list of atom indices where a new molecule starts
+        typeMap: dictionary of atom types
+        residue_Map: dictionary of residue names
+        nameMap: dictionary
     
     """
     lines = []
@@ -108,8 +162,11 @@ def create_pdb_lines_MD(trajectory_coordinates, atoms_type, atoms_number, atoms_
 
 def create_pdb_lines_QM(trajectory_coordinates, atoms_number, nameMap):
     """
-    We go through each atom line and bring the inputs in the pdb format
-    
+    Go through each atom line and bring the inputs in the pdb format
+    Args:
+        trajectory_coordinates: coordinates of the atoms
+        atoms_number: number of the atoms
+        nameMap: dictionary
     """
     lines = []
     residue_number = 1
@@ -122,6 +179,13 @@ def create_pdb_lines_QM(trajectory_coordinates, atoms_number, nameMap):
     return lines
 
 def write_pdb(struct, specification, lines):
+    """
+    Write the pdb file
+    Args:
+        struct: pdb code
+        specification: specification of the pdb file
+        lines: list of pdb lines
+    """
     with open(struct+specification+'.pdb', 'w') as of:
         for line in lines:
             of.write(line+'\n')

@@ -36,12 +36,21 @@ import sys
 
 def get_maps(current_dir):
     """
-    Loading the mapping of amber AT to index.
+    Loading the mapping of amber atom types to index.
+    Args:
+    current_dir (str): Path to the directory of the script
     """
     elementMap = pickle.load(open(current_dir+'/Maps/atoms_type_map_generate.pickle', 'rb'))
     return elementMap
 
 def get_entries(struct, f, h5_properties):
+    """
+    Get the entries from the h5 file.
+    Args:
+    struct (str): PDB code of the structure
+    f (h5py file): h5py file containing the dataset
+    h5_properties (list): List of properties to extract from the h5 file
+    """
     h5_entries = {}
     for h5_property in h5_properties:
         h5_entries[h5_property] = f.get(struct+'/'+h5_property)
@@ -49,8 +58,16 @@ def get_entries(struct, f, h5_properties):
 
 def get_strip_indices(args, h5_entries, strip_value, strip_feature):
     """
-    We generate the indices for stripping for different cases. We also have to adjust the molecule_begin_atom_index.
-    We strip the strip_values from the rest of the values. 
+    Generates indices for stripping for different cases. Adjusts the molecule_begin_atom_index.
+    Strip strip_values from the rest of the values.
+
+    Args:
+    args (argparse): Arguments
+    h5_entries (dict): Dictionary of h5 entries
+    strip_value (int): Value to strip
+    strip_feature (str): Feature to strip
+
+
     """
     stripping_available = False
     if strip_feature == 'atoms_element':
@@ -84,8 +101,13 @@ def get_strip_indices(args, h5_entries, strip_value, strip_feature):
 
 def get_inverse_strip_indices(h5_entries, strip_value, strip_feature):
     """
-    We generate the indices for stripping for different cases. We also have to adjust the molecule_begin_atom_index.
-    The same as get_strip_indices, but we keep the strip_values instead of stripping them.
+    Generates the indices for stripping for different cases. Adjusts the molecule_begin_atom_index.
+    The same as get_strip_indices, but keeps the strip_values instead of stripping them.
+    Args:
+    h5_entries (dict): Dictionary of h5 entries
+    strip_value (int): Value to strip
+    strip_feature (str): Feature to strip
+
     """
     stripping_available = False
     if strip_feature == 'atoms_element':
@@ -119,6 +141,13 @@ def get_inverse_strip_indices(h5_entries, strip_value, strip_feature):
 def strip_feature(args, strip_properties, h5_entries, strip_value, strip_feature, inversion=False):
     """
     The different properties are stripped according to the calculated indices.
+    Args:
+    args (argparse): Arguments
+    strip_properties (list): Properties to strip
+    h5_entries (dict): Dictionary of h5 entries
+    strip_value (int): Value to strip
+    strip_feature (str): Feature to strip
+    inversion (bool): If True, the strip_values are kept instead of stripped
     """
     stripped_entries = {}
     if not inversion:
@@ -139,6 +168,12 @@ def write_h5_info(outName, struct, preprocessing_entries, h5_entries, storeTraj 
     """
     Writing features to h5 file. Please beware that the feature name is relevant for correct dtype definiton.
     atoms_ and molecules_ are always i8, frames_, feature_ and trajectory_ f8.
+    Args:
+    outName (str): Name of the output h5 file
+    struct (str): PDB code of the structure
+    preprocessing_entries (dict): Dictionary of preprocessing entries
+    h5_entries (dict): Dictionary of h5 entries
+    storeTraj (bool): If True, the trajectory is stored
     
     """
     with h5py.File(outName, 'a') as oF:
@@ -160,8 +195,15 @@ def write_h5_info(outName, struct, preprocessing_entries, h5_entries, storeTraj 
 
 def convert_to_Pres_Lat(stripped_entries, elementMap, strip_value, strip_feature):
     """
-    To create a new feature that contains only protein residue specifications (Pres) but all atom types for the ligand (Lat)
-    The protein atom elements go until 10, but residue number 1 is ACE which will only appear in peptides, so -1.
+    Creates a new feature that contains only protein residue specifications (Pres) but all atom types for the ligand (Lat)
+    The protein atom elements (until 1-10). residue number 1 is ACE which will only appear in peptides, so -1.
+
+    Args:
+    stripped_entries (dict): Dictionary of stripped entries
+    elementMap (dict): Dictionary of element mapping
+    strip_value (int): Value to strip
+    strip_feature (str): Feature to strip
+
     """
     atoms_Pres_Lat_protein = stripped_entries["atoms_residue"][:stripped_entries["molecules_begin_atom_index"][-1]]+9
     atoms_Pres_Lat = []
@@ -173,6 +215,11 @@ def convert_to_Pres_Lat(stripped_entries, elementMap, strip_value, strip_feature
 def get_atom_indices_pocket(cog, trajectory_coordinates, molecules_begin_atoms_index, cutoff):
     """
     Pocket indices are calculated based on a distance criterion.
+    Args:
+    cog (np.array): Center of geometry
+    trajectory_coordinates (np.array): Coordinates
+    molecules_begin_atoms_index (list): Begin atom index of the molecules
+    cutoff (float): Distance cutoff
     """
     protein_coordinates= trajectory_coordinates[0,:molecules_begin_atoms_index[-1], :]
     cog = np.expand_dims(cog, axis=0)
@@ -186,6 +233,11 @@ def get_atom_indices_pocket(cog, trajectory_coordinates, molecules_begin_atoms_i
 def align_frame_to_ref(h5_entries, varframe, coord_ref):
     """
     Gets coordinates, translates by centroid and rotates by rotation matrix R
+    Args:
+    h5_entries (dict): Dictionary of h5 entries
+    varframe (int): Frame index
+    coord_ref (np.array): Reference coordinates
+
     """
     coord_var = h5_entries["trajectory_coordinates"][varframe]
     trans = centroid(coord_ref)
@@ -197,7 +249,11 @@ def align_frame_to_ref(h5_entries, varframe, coord_ref):
 
 def rmsd(A, B):
     """
-    Not used yet, but might be helpful for some applications.
+    Calculates the root mean square deviation.
+    Args:
+    A (np.array): Array A
+    B (np.array): Array B
+
     """
     Coord = len(A[0])
     NAtom = len(A)
@@ -208,6 +264,11 @@ def rmsd(A, B):
     return np.sqrt(cum / NAtom)
 
 def centroid(A):
+    """
+    Calculates the centroid of the coordinates.
+    Args:
+    A (np.array): Array A
+    """
     A = A.mean(axis=0)
     return A
 
@@ -216,6 +277,10 @@ def kabsch(coord_var, coord_ref):
     calculation of Rotation Matrix R
     see SVD  http://en.wikipedia.org/wiki/Kabsch_algorithm
     and  proper/improper rotation, JCC 2004, 25, 1894.
+    Args:
+    coord_var (np.array): Coordinates
+    coord_ref (np.array): Reference coordinates
+
     """
     covar = np.dot(coord_var.T, coord_ref)
     v, s, wt = np.linalg.svd(covar)
@@ -227,6 +292,12 @@ def kabsch(coord_var, coord_ref):
     return R
 
 def adaptability(h5_entries):
+    """
+    Calculates the adaptability of the atoms.
+    Args:
+    h5_entries (dict): Dictionary of h5 entries
+
+    """
     ref = h5_entries["trajectory_coordinates"][0]
     NAtom = len(ref)
     dist_to_ref_mat = np.zeros((NAtom,100))
@@ -237,6 +308,11 @@ def adaptability(h5_entries):
     return np.mean(dist_to_ref_mat, axis=1), np.std(dist_to_ref_mat, axis=1), ref 
 
 def main(args):
+    """
+    Main function for preprocessing the dataset.
+    Args:
+    args (argparse.Namespace): Input arguments
+    """
     h5_properties = ['trajectory_coordinates', 'atoms_type', 'atoms_number','atoms_residue','atoms_element','molecules_begin_atom_index','frames_rmsd_ligand','frames_distance','frames_interaction_energy','frames_bSASA']
     strip_properties = ["atoms_type", "atoms_number", "atoms_residue", "atoms_element", "trajectory_coordinates","molecules_begin_atom_index"]
     current_dir = os.path.dirname(os.path.realpath(__file__))

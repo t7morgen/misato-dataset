@@ -155,7 +155,7 @@ If you found this work useful please consider citing the article.
 ```bibtex
 @article{siebenmorgen2024misato,
   title={MISATO: machine learning dataset of protein--ligand complexes for structure-based drug discovery},
-  author={Siebenmorgen, Till and Menezes, Filipe and Benassou, Sabrina and Merdivan, Erinc and Didi, Kieran and Mour{\~a}o, Andr{\'e} Santos Dias and Kitel, Rados{\l}aw and Li{\`o}, Pietro and Kesselheim, Stefan and Piraud, Marie and others},
+  author={Siebenmorgen, Till and Menezes, Filipe and Benassou, Sabrina and Merdivan, Erinc and Didi, Kieran and Mour{\~a}o, Andr{\'e} Santos Dias and Kitel, Rados{\l}aw and Li{\`o}, Pietro and Kesselheim, Stefan and Piraud, Marie and Theis, Fabian J. and Sattler, Michael and Popowicz, Grzegorz M.},
   journal={Nature Computational Science},
   pages={1--12},
   year={2024},
