@@ -45,6 +45,14 @@ from transformQM import GNNTransformQM
 
 
 def train_loop(model, loader, optimizer, local_rank):
+    """
+    Training loop for the GNN model.
+    Args:
+    model (torch.nn.Module): GNN model
+    loader (torch_geometric.loader.DataLoader): DataLoader object
+    optimizer (torch.optim): Optimizer object
+    local_rank (int): Rank of the process
+    """
     model.train()
 
     loss_all = 0
@@ -67,6 +75,13 @@ def train_loop(model, loader, optimizer, local_rank):
 
 @torch.no_grad()
 def test(model, loader, local_rank):
+    """
+    Testing loop for the GNN model.
+    Args:
+    model (torch.nn.Module): GNN model
+    loader (torch_geometric.loader.DataLoader): DataLoader object
+    local_rank (int): Rank of the process
+    """
     model.eval()
     loss_all = 0
     total = 0

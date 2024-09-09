@@ -30,10 +30,21 @@ import pytraj as pt
 
 
 def download_pdbfile(pdb):
+    """
+    Download pdb file from the PDB.
+    Args:
+    pdb (str): PDB code of the structure
+    """
     if not os.path.isfile(pdb+'.pdb'):
         urllib.request.urlretrieve('http://files.rcsb.org/download/'+pdb.upper()+'.pdb', pdb+'.pdb')
 
 def run_leap(fileName, path):
+    """
+    Run tleap to convert pdb file to amber format.
+    Args:
+    fileName (str): Name of the pdb file
+    path (str): Path to the directory of the structures
+    """
     leapText = """
     source leaprc.protein.ff14SB
     source leaprc.water.tip3p
@@ -46,6 +57,11 @@ def run_leap(fileName, path):
     os.system("tleap -f "+path+"leap.in >> "+path+"leap.out")
 
 def convert_to_amber_format(pdbName):
+    """
+    Convert pdb file to amber format.
+    Args:
+    pdbName (str): Name of the pdb file
+    """
     fileName, path = pdbName+'.pdb', pdbName+'/'
     os.system("pdb4amber -i "+fileName+" -p -y -o "+path+"4amb.pdb -l "+path+"pdb4amber_protein.log")
     run_leap(fileName, path)
@@ -55,6 +71,11 @@ def convert_to_amber_format(pdbName):
     return pt.iterload(path+'exp.crd', top = path+'exp.top')
 
 def get_maps(mapPath):
+    """
+    Load the maps for generating the h5 files.
+    Args:
+    mapPath (str): Path to the maps
+    """
     residueMap = pickle.load(open(mapPath+'atoms_residue_map_generate.pickle','rb'))
     nameMap = pickle.load(open(mapPath+'atoms_name_map_generate.pickle','rb'))
     typeMap = pickle.load(open(mapPath+'atoms_type_map_generate.pickle','rb'))
@@ -62,6 +83,11 @@ def get_maps(mapPath):
     return residueMap, nameMap, typeMap, elementMap
 
 def get_residues_atomwise(residues):
+    """
+    Get the residues atomwise.
+    Args:
+    residues (list): Residues
+    """
     atomwise = []
     for name, nAtoms in residues:
         for i in range(nAtoms):
@@ -69,6 +95,11 @@ def get_residues_atomwise(residues):
     return atomwise
 
 def get_begin_atom_index(traj):
+    """
+    Get the begin atom index of the molecules.
+    Args:
+    traj (pytraj trajectory): Trajectory
+    """
     natoms = [m.n_atoms for m in traj.top.mols]
     molecule_begin_atom_index = [0] 
     x = 0
@@ -79,6 +110,12 @@ def get_begin_atom_index(traj):
     return molecule_begin_atom_index
 
 def get_traj_info(traj, mapPath):
+    """
+    Get the trajectory information.
+    Args:
+    traj (pytraj trajectory): Trajectory
+    mapPath (str): Path to the maps
+    """
     coordinates  = traj.xyz
     residueMap, nameMap, typeMap, elementMap = get_maps(mapPath)
     types = [typeMap[a.type] for a in traj.top.atoms]
@@ -90,6 +127,18 @@ def get_traj_info(traj, mapPath):
     return coordinates[0], elements, types, atomic_numbers, residues_atomwise, molecule_begin_atom_index
 
 def write_h5_info(outName, struct, atoms_type, atoms_number, atoms_residue, atoms_element, molecules_begin_atom_index, atoms_coordinates_ref):
+    """
+    Write the trajectory information to a h5 file.
+    Args:
+    outName (str): Name of the output h5 file
+    struct (str): PDB code of the structure
+    atoms_type (list): Atom types
+    atoms_number (list): Atom numbers
+    atoms_residue (list): Residues
+    atoms_element (list): Elements
+    molecules_begin_atom_index (list): Begin atom index of the molecules
+    atoms_coordinates_ref (np.array): Coordinates
+    """
     if os.path.isfile(outName):
         os.remove(outName)
     with h5py.File(outName, 'w') as oF:
@@ -103,6 +152,12 @@ def write_h5_info(outName, struct, atoms_type, atoms_number, atoms_residue, atom
 
 
 def setup(args):
+    """
+    Setup the input arguments.
+    Args:
+    args (argparse.Namespace): Input arguments
+    """
+
     if args.pdbid is None and args.fileName is None:
         sys.exit('Please provide pdb-id or pdb file name')
     if args.fileName == None:
@@ -117,6 +172,11 @@ def setup(args):
     return pdbName    
 
 def main(args):
+    """
+    Main function to process the input arguments.
+    Args:
+    args (argparse.Namespace): Input arguments
+    """
     pdbName = setup(args)
     traj = convert_to_amber_format(pdbName)
     print('The following trajectory was created:', traj)

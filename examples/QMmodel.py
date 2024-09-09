@@ -25,6 +25,12 @@ import torch.nn.functional as F
 from torch_geometric.nn import NNConv, Set2Set
 
 class GNN_QM(torch.nn.Module):
+    """
+    GNN model for QM data.
+    Args:
+    num_features (int): Number of features in the input data
+    dim (int): Hidden dimension of the GNN model
+    """
     def __init__(self, num_features, dim):
         super(GNN_QM, self).__init__()
         self.lin0 = torch.nn.Linear(num_features, dim)

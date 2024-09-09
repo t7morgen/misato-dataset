@@ -42,6 +42,14 @@ from datasets import ProtDataset
 from transformMD import GNNTransformMD
 
 def train_loop(model, loader, optimizer, local_rank):
+    """
+    Training loop for the GNN model.
+    Args:
+    model (torch.nn.Module): GNN model
+    loader (torch_geometric.loader.DataLoader): DataLoader object
+    optimizer (torch.optim): Optimizer object
+    local_rank (int): Rank of the process
+    """
     model.train()
 
     loss_all = 0
@@ -64,6 +72,13 @@ def train_loop(model, loader, optimizer, local_rank):
 
 @torch.no_grad()
 def test(model, loader, local_rank):
+    """
+    Testing loop for the GNN model.
+    Args:
+    model (torch.nn.Module): GNN model
+    loader (torch_geometric.loader.DataLoader): DataLoader object
+    local_rank (int): Rank of the process
+    """
     model.eval()
 
     loss_all = 0
@@ -104,9 +119,25 @@ def test(model, loader, local_rank):
 #     plt.savefig(plot_dir)
 
 def save_weights(model, weight_dir):
+    """
+    Save the weights of the model.
+    Args:
+    model (torch.nn.Module): GNN model
+    weight_dir (str): Path to the weights file
+    """
     torch.save(model.state_dict(), weight_dir)
 
 def train(args, device, log_dir, local_rank, rep=None, test_mode=False):
+    """
+    Train the GNN model.
+    Args:
+    args (argparse.Namespace): Input arguments
+    device (torch.device): Device on which tensors will be allocated
+    log_dir (str): Path to the log directory
+    local_rank (int): Rank of the process
+    rep (int): Repetition number
+    test_mode (bool): Test mode
+    """
     # logger = logging.getLogger('lba')
     # logger.basicConfig(filename=os.path.join(log_dir, f'train_{split}_cv{fold}.log'),level=logging.INFO)
 

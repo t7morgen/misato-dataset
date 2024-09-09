@@ -33,10 +33,20 @@ inv_atomic_numbers_Map = {v:k for k,v in atomic_numbers_Map.items()}
 
 
 def download_pdbfile(pdb):
+    """
+    Download pdb file from the PDB Ligand.
+    Args:
+    pdb (str): PDB code of the structure
+    """
     if not os.path.isfile(pdb+'.pdb'):
         urllib.request.urlretrieve('https://files.rcsb.org/ligands/download/'+pdb.upper()+'_model.sdf', pdb+'.sdf')
 
 def read_sdf_file(pdbName):
+    """
+    Read the sdf file and extract the coordinates and atom types.
+    Args:
+    pdbName (str): Name of the pdb file
+    """
     print('reading', pdbName+'.sdf')
     file = open(pdbName+'.sdf', mode="r")
     content = file.read()
@@ -49,6 +59,14 @@ def read_sdf_file(pdbName):
     return datasplit
 
 def write_h5_info(struct, atoms_type, values, outName):
+    """
+    Write the atom types and coordinates to a h5 file.
+    Args:
+    struct (str): PDB code of the structure
+    atoms_type (list): Atom types
+    values (np.array): Coordinates
+    outName (str): Name of the output h5 file
+    """
     with h5py.File(outName, 'w') as oF:
         structgroup = oF.create_group(struct)     
         atomprop_group = structgroup.create_group('atom_properties')
@@ -60,6 +78,11 @@ def write_h5_info(struct, atoms_type, values, outName):
 
 
 def process_content(content):
+    """
+    Process the content of the sdf file.
+    Args:
+    content (list): Content of the sdf file
+    """
     x, y, z, atom_type = [], [], [], []    
     for x_i, y_i, z_i, atom_type_i in content:
         x.append(float(x_i))
@@ -71,6 +94,11 @@ def process_content(content):
     return padded_values, atom_type
 
 def setup(args):
+    """
+    Setup the input arguments.
+    Args:
+    args (argparse.Namespace): Input arguments
+    """
     if args.pdbid is None and args.fileName is None:
         sys.exit('Please provide pdb-id or pdb file name')
     if args.fileName == None:
@@ -85,6 +113,11 @@ def setup(args):
     return pdbName    
 
 def main(args): 
+    """
+    Main function to process the input arguments.
+    Args:
+    args (argparse.Namespace): Input arguments
+    """
     pdbName = setup(args)
     content = read_sdf_file(pdbName)
     values, atom_types = process_content(content)

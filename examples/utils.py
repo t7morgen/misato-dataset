@@ -83,6 +83,9 @@ def init_distributed_mode(port=12354):
 
 # Returns True if the distributed package is available. False otherwise
 def is_dist_avail_and_initialized():
+    """
+    Check if the distributed package is available and initialized.
+    """
     if not dist.is_available():
         return False
     if not dist.is_initialized():
@@ -90,20 +93,32 @@ def is_dist_avail_and_initialized():
     return True 
 
 def get_rank():
+    """
+    Get the rank of the current process.
+    """
     if not is_dist_avail_and_initialized():
         return 0
     return dist.get_rank()
 
 def is_main_process():
+    """
+    Check if the current process is the main process.
+    """
     return get_rank() == 0
 
 
 def save_on_master(*args, **kwargs):
+    """
+    Save a PyTorch model only on the master process.
+    """
     if is_main_process():
         torch.save(*args, **kwargs)
 
 
 def mkdir(path):
+    """
+    Create a directory if it does not exist.
+    """
     try:
         os.makedirs(path)
     except OSError as e:

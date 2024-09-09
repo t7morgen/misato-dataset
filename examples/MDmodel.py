@@ -25,6 +25,12 @@ import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
 class GNN_MD(torch.nn.Module):
+    """
+    GNN model for MD data.
+    Args:
+    num_features (int): Number of features in the input data
+    hidden_dim (int): Hidden dimension of the GNN model
+    """
     def __init__(self, num_features, hidden_dim):
         super(GNN_MD, self).__init__()
         self.conv1 = GCNConv(num_features, hidden_dim)
