@@ -348,7 +348,7 @@ def main(args):
                 if count ==1:
                     print('Stripping ', args.strip_feature, args.strip_value, ' and calculating adaptability for the atoms that were not stripped.')                
                 preprocessing_entries = strip_feature(args, strip_properties, h5_entries, args.strip_value, args.strip_feature)
-                preprocessing_entries["feature_atoms_adaptability"], preprocessing_entries["feature_atoms_adaptability"], preprocessing_entries["atoms_coordinates_ref"] = adaptability(preprocessing_entries)
+                preprocessing_entries["feature_atoms_adaptability"], _, preprocessing_entries["atoms_coordinates_ref"] = adaptability(preprocessing_entries)
                 preprocessing_done = True
 
             if not preprocessing_done:
