@@ -154,7 +154,7 @@ def create_pdb_lines_MD(trajectory_coordinates, atoms_type, atoms_number, atoms_
         residue_name = residue_Map[atoms_residue[i]]
         atom_name = get_atom_name(i, atoms_number, residue_atom_index, residue_name, type_string, nameMap)
         x,y,z = trajectory_coordinates[i][0],trajectory_coordinates[i][1],trajectory_coordinates[i][2]
-        line = 'ATOM{0:7d}  {1:<4}{2:<4}{3:>5}    {4:8.3f}{5:8.3f}{6:8.3f}  1.00  0.00           {7:<5}'.format(i+1,atom_name,residue_name,residue_number,x,y,z,atomic_numbers_Map[atoms_number[i]])
+        line = 'ATOM{0:7d}  {1:<4}{2:<4}{3:>5}    {4:8.3f}{5:8.3f}{6:8.3f}  1.00  0.00          {7:<5}'.format(i+1,atom_name,residue_name,residue_number,x,y,z,atomic_numbers_Map[atoms_number[i]])
         residue_number, residue_atom_index = update_residue_indices(residue_number, i, type_string, atoms_type, atoms_residue, residue_name, residue_atom_index,residue_Map, typeMap)
         lines.append(line)
         residue_number, residue_atom_index, lines = insert_TERS(i, molecules_begin_atom_index, residue_number, residue_atom_index, lines)
@@ -174,7 +174,7 @@ def create_pdb_lines_QM(trajectory_coordinates, atoms_number, nameMap):
     for i in range(len(trajectory_coordinates[:])):
         residue_atom_index +=1
         x,y,z = trajectory_coordinates[i][0],trajectory_coordinates[i][1],trajectory_coordinates[i][2]
-        line = 'ATOM{0:7d}  {1:<4}{2:<4}{3:>5}    {4:8.3f}{5:8.3f}{6:8.3f}  1.00  0.00           {7:<5}'.format(i+1,atomic_numbers_Map[int(atoms_number[i])]+str(i), 'MOL',residue_number,x,y,z,atomic_numbers_Map[int(atoms_number[i])])
+        line = 'ATOM{0:7d}  {1:<4}{2:<4}{3:>5}    {4:8.3f}{5:8.3f}{6:8.3f}  1.00  0.00          {7:<5}'.format(i+1,atomic_numbers_Map[int(atoms_number[i])]+str(i), 'MOL',residue_number,x,y,z,atomic_numbers_Map[int(atoms_number[i])])
         lines.append(line)
     return lines
 
